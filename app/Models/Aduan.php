@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class Aduan extends Model
+{
+    use HasFactory;
+
+    protected $table = 'data_aduans';
+
+    protected $fillable = [
+        'tanggal',
+        'koridor_id',
+        'jenis_aduan_id',
+        'media_pelaporan',
+        'isi_aduan',
+        'status',
+        'keterangan_tindak_lanjut',
+    ];
+
+    protected $casts = [
+        'tanggal' => 'date',
+    ];
+
+    // Relasi ke Koridor
+    public function koridor()
+    {
+        return $this->belongsTo(Koridor::class, 'koridor_id');
+    }
+
+    // Relasi ke Jenis Aduan
+    public function jenisAduan()
+    {
+        return $this->belongsTo(JenisAduan::class, 'jenis_aduan_id');
+    }
+}
+
