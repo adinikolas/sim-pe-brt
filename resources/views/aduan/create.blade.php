@@ -1,96 +1,97 @@
 <x-app-layout>
-    <div class="py-6">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
 
-            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
-                Form Input Aduan
-            </h2>
+    {{-- HEADER (POSISI SAMA DENGAN DAFTAR ADUAN) --}}
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200">
+            Tambah Aduan
+        </h2>
+    </x-slot>
 
-            {{-- Error --}}
-            @if ($errors->any())
-                <div class="mb-4 rounded-md bg-red-50 dark:bg-red-900 p-4 text-red-700 dark:text-red-200">
-                    <ul class="list-disc list-inside text-sm">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+    <div class="pt-6">
+        <div class="max-w-6xl mx-auto px-6 space-y-6">
 
             <form action="{{ route('aduan.store') }}" method="POST"
-                  class="bg-white dark:bg-gray-900 shadow rounded-lg p-6 space-y-4">
+                  class="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
                 @csrf
 
+                {{-- ================= DATA ADUAN ================= --}}
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Tanggal Aduan
-                    </label>
+                    <h3 class="mb-4 font-semibold text-gray-700 dark:text-gray-300">
+                        Data Aduan
+                    </h3>
 
-                    <input
-                        type="date"
-                        name="tanggal"
-                        required
-                        value="{{ old('tanggal') }}"
-                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700
-                            dark:bg-gray-800 dark:text-gray-200
-                            focus:border-indigo-500 focus:ring-indigo-500">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <x-form.input
+                            label="Tanggal"
+                            type="date"
+                            name="tanggal"
+                            required
+                            value="{{ old('tanggal', now()->format('Y-m-d')) }}" />
+
+                        <x-form.input
+                            label="Jam"
+                            type="time"
+                            name="jam"
+                            value="{{ old('jam') }}" />
+
+                        <x-form.input
+                            label="Pelapor"
+                            name="pelapor"
+                            value="{{ old('pelapor', 'Anonim') }}" />
+
+                        <x-form.select
+                            label="Media Pengaduan"
+                            name="media_pelaporan"
+                            required>
+                            @foreach ([
+                                'WA','IG','FB','X',
+                                'Lapor Semar','Call Center',
+                                'Email','Datang Langsung'
+                            ] as $media)
+                                <option value="{{ $media }}">{{ $media }}</option>
+                            @endforeach
+                        </x-form.select>
+
+                        <x-form.select
+                            label="Koridor"
+                            name="koridor_id"
+                            required>
+                            @foreach ($koridors as $k)
+                                <option value="{{ $k->id }}">{{ $k->nama_koridor }}</option>
+                            @endforeach
+                        </x-form.select>
+
+                        <x-form.select
+                            label="Jenis Aduan"
+                            name="jenis_aduan_id"
+                            required>
+                            @foreach ($jenisAduans as $j)
+                                <option value="{{ $j->id }}">{{ $j->nama_aduan }}</option>
+                            @endforeach
+                        </x-form.select>
+                    </div>
+
+                    <div class="mt-6">
+                        <x-form.textarea
+                            label="Substansi Pengaduan"
+                            name="isi_aduan"
+                            rows="4"
+                            required>
+                            {{ old('isi_aduan') }}
+                        </x-form.textarea>
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Koridor</label>
-                    <select name="koridor_id" required
-                            class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700
-                                   dark:bg-gray-800 dark:text-gray-200 focus:ring-indigo-500">
-                        <option value="">-- Pilih Koridor --</option>
-                        @foreach ($koridors as $koridor)
-                            <option value="{{ $koridor->id }}">{{ $koridor->nama_koridor }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jenis Aduan</label>
-                    <select name="jenis_aduan_id" required
-                            class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700
-                                   dark:bg-gray-800 dark:text-gray-200 focus:ring-indigo-500">
-                        <option value="">-- Pilih Jenis Aduan --</option>
-                        @foreach ($jenisAduans as $jenis)
-                            <option value="{{ $jenis->id }}">{{ $jenis->nama_aduan }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Media Pelaporan</label>
-                    <select name="media_pelaporan" required
-                            class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700
-                                   dark:bg-gray-800 dark:text-gray-200 focus:ring-indigo-500">
-                        <option value="">-- Pilih Media --</option>
-                        <option value="WA">WhatsApp</option>
-                        <option value="IG">Instagram</option>
-                        <option value="Lapor Semar">Lapor Semar</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Isi Aduan</label>
-                    <textarea name="isi_aduan" rows="4" required
-                              class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700
-                                     dark:bg-gray-800 dark:text-gray-200 focus:ring-indigo-500"></textarea>
-                </div>
-
-                <div class="flex justify-end space-x-2">
-                    <a href="{{ route('aduan.index') }}"
-                       class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700
-                              text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">
-                        Batal
+                {{-- ================= AKSI ================= --}}
+                <div class="flex justify-end gap-3 mt-6 pt-4 border-t dark:border-gray-700">
+                    <a href="{{ route('aduan.index') }}">
+                        <x-secondary-button>Batal</x-secondary-button>
                     </a>
-                    <x-primary-button type="submit">
-                        Simpan
-                    </x-primary-button>
+                    <x-primary-button>Simpan</x-primary-button>
                 </div>
-            </form>
 
+            </form>
+            <br>
         </div>
     </div>
 </x-app-layout>

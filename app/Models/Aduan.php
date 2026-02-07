@@ -13,6 +13,12 @@ class Aduan extends Model
 
     protected $fillable = [
         'tanggal',
+        'jam',
+        'pelapor',
+        'pta',
+        'pengemudi',
+        'no_armada',
+        'tkp',
         'koridor_id',
         'jenis_aduan_id',
         'media_pelaporan',

@@ -1,126 +1,131 @@
 <x-app-layout>
-    <div class="py-6">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
 
-            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
-                Edit Aduan
-            </h2>
+    {{-- HEADER --}}
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200">
+            Edit Aduan
+        </h2>
+    </x-slot>
 
-            {{-- Error --}}
-            @if ($errors->any())
-                <div class="mb-4 rounded-md bg-red-50 dark:bg-red-900 p-4 text-red-700 dark:text-red-200">
-                    <ul class="list-disc list-inside text-sm">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+    <div class="pt-6">
+        <div class="max-w-6xl mx-auto px-6 space-y-6">
 
-            <form action="{{ route('aduan.update', $aduan->id) }}" method="POST"
-                  class="bg-white dark:bg-gray-900 shadow rounded-lg p-6 space-y-4">
+            {{-- ================= CARD 1 : DATA ADUAN ================= --}}
+            <form action="{{ route('aduan.update', $aduan->id) }}"
+                  method="POST">
                 @csrf
                 @method('PUT')
 
-                {{-- Tanggal --}}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal</label>
-                    <input type="date"
-                        name="tanggal"
-                        value="{{ old('tanggal', $aduan->tanggal->format('Y-m-d')) }}"
-                        required
-                        class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700
-                                dark:bg-gray-800 dark:text-gray-200">
+                <div class="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
+                    <h3 class="mb-4 font-semibold text-gray-700 dark:text-gray-300">
+                        Data Aduan
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <x-form.input label="Tanggal"
+                                      type="date"
+                                      name="tanggal"
+                                      value="{{ $aduan->tanggal->format('Y-m-d') }}" />
+
+                        <x-form.input label="Jam"
+                                      type="time"
+                                      name="jam"
+                                      value="{{ old('jam', $aduan->jam) }}" />
+
+                        <x-form.input label="Pelapor"
+                                      type="text"
+                                      name="pelapor"
+                                      value="{{ old('pelapor', $aduan->pelapor) }}" />
+
+                        <x-form.select label="Media Pengaduan"
+                                       name="media_pelaporan">
+                            @foreach ([
+                                'WA','IG','FB','X',
+                                'Lapor Semar','Call Center',
+                                'Email','Datang Langsung'
+                            ] as $media)
+                                <option value="{{ $media }}"
+                                    {{ $aduan->media_pelaporan==$media?'selected':'' }}>
+                                    {{ $media }}
+                                </option>
+                            @endforeach
+                        </x-form.select>
+
+                        <x-form.select label="Koridor"
+                                       name="koridor_id">
+                            @foreach ($koridors as $k)
+                                <option value="{{ $k->id }}"
+                                    {{ $aduan->koridor_id==$k->id?'selected':'' }}>
+                                    {{ $k->nama_koridor }}
+                                </option>
+                            @endforeach
+                        </x-form.select>
+
+                        <x-form.select label="Jenis Aduan"
+                                       name="jenis_aduan_id">
+                            @foreach ($jenisAduans as $j)
+                                <option value="{{ $j->id }}"
+                                    {{ $aduan->jenis_aduan_id==$j->id?'selected':'' }}>
+                                    {{ $j->nama_aduan }}
+                                </option>
+                            @endforeach
+                        </x-form.select>
+                    </div>
+
+                    <div class="mt-6">
+                        <x-form.textarea label="Substansi Pengaduan"
+                                         name="isi_aduan"
+                                         rows="3">
+                            {{ $aduan->isi_aduan }}
+                        </x-form.textarea>
+                    </div>
                 </div>
 
-                {{-- Koridor --}}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Koridor</label>
-                    <select name="koridor_id" required
-                            class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700
-                                   dark:bg-gray-800 dark:text-gray-200 focus:ring-indigo-500">
-                        @foreach ($koridors as $koridor)
-                            <option value="{{ $koridor->id }}"
-                                {{ $aduan->koridor_id == $koridor->id ? 'selected' : '' }}>
-                                {{ $koridor->nama_koridor }}
+                <br>
+
+                {{-- ================= CARD 2 : TINDAK LANJUT ================= --}}
+                <div class="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
+                    <h3 class="mb-4 font-semibold text-gray-700 dark:text-gray-300">
+                        Tindak Lanjut & Operasional
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <x-form.input label="PTA" name="pta" value="{{ old('pta', $aduan->pta) }}" />
+                        <x-form.input label="Pengemudi" name="pengemudi" value="{{ old('pengemudi', $aduan->pengemudi) }}" />
+                        <x-form.input label="No Armada" name="no_armada" value="{{ old('no_armada', $aduan->no_armada) }}" />
+                        <x-form.input label="TKP" name="tkp" value="{{ old('tkp', $aduan->tkp) }}" />
+                    </div>
+
+                    <div class="mt-6">
+                        <x-form.textarea label="Keterangan Tindak Lanjut"
+                                         name="keterangan_tindak_lanjut"
+                                         rows="3">
+                            {{ $aduan->keterangan_tindak_lanjut }}
+                        </x-form.textarea>
+                    </div>
+
+                    <div class="mt-4 w-48">
+                        <x-form.select label="Status" name="status">
+                            <option value="Belum" {{ $aduan->status=='Belum'?'selected':'' }}>
+                                Belum
                             </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                {{-- Jenis Aduan --}}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jenis Aduan</label>
-                    <select name="jenis_aduan_id" required
-                            class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700
-                                   dark:bg-gray-800 dark:text-gray-200 focus:ring-indigo-500">
-                        @foreach ($jenisAduans as $jenis)
-                            <option value="{{ $jenis->id }}"
-                                {{ $aduan->jenis_aduan_id == $jenis->id ? 'selected' : '' }}>
-                                {{ $jenis->nama_aduan }}
+                            <option value="Selesai" {{ $aduan->status=='Selesai'?'selected':'' }}>
+                                Selesai
                             </option>
-                        @endforeach
-                    </select>
-                </div>
+                        </x-form.select>
+                    </div>
 
-                {{-- Media --}}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Media Pelaporan</label>
-                    <select name="media_pelaporan" required
-                            class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700
-                                   dark:bg-gray-800 dark:text-gray-200 focus:ring-indigo-500">
-                        @foreach (['WA', 'IG', 'Lapor Semar'] as $media)
-                            <option value="{{ $media }}"
-                                {{ $aduan->media_pelaporan == $media ? 'selected' : '' }}>
-                                {{ $media }}
-                            </option>
-                        @endforeach
-                    </select>
+                    {{-- AKSI --}}
+                    <div class="flex justify-end gap-3 mt-6 pt-4 border-t dark:border-gray-700">
+                        <a href="{{ route('aduan.index') }}">
+                            <x-secondary-button>Batal</x-secondary-button>
+                        </a>
+                        <x-primary-button>Update</x-primary-button>
+                    </div>
                 </div>
-
-                {{-- Isi Aduan --}}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Isi Aduan</label>
-                    <textarea name="isi_aduan" rows="4" required
-                              class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700
-                                     dark:bg-gray-800 dark:text-gray-200 focus:ring-indigo-500">{{ old('isi_aduan', $aduan->isi_aduan) }}</textarea>
-                </div>
-
-                {{-- Status --}}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-                    <select name="status" required
-                            class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700
-                                   dark:bg-gray-800 dark:text-gray-200 focus:ring-indigo-500">
-                        <option value="Belum" {{ $aduan->status == 'Belum' ? 'selected' : '' }}>Belum</option>
-                        <option value="Selesai" {{ $aduan->status == 'Selesai' ? 'selected' : '' }}>Selesai</option>
-                    </select>
-                </div>
-
-                {{-- Keterangan --}}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Keterangan Tindak Lanjut
-                    </label>
-                    <textarea name="keterangan_tindak_lanjut" rows="3"
-                              class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700
-                                     dark:bg-gray-800 dark:text-gray-200 focus:ring-indigo-500">{{ old('keterangan_tindak_lanjut', $aduan->keterangan_tindak_lanjut) }}</textarea>
-                </div>
-
-                {{-- Aksi --}}
-                <div class="flex justify-end space-x-2">
-                    <a href="{{ route('aduan.index') }}">
-                        <x-secondary-button>
-                            Batal
-                        </x-secondary-button>
-                    </a>
-                    <x-primary-button type="submit">
-                        Update
-                    </x-primary-button>
-                </div>
+                <br>
 
             </form>
-
         </div>
     </div>
 </x-app-layout>
