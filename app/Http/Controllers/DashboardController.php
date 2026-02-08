@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Aduan;
 use App\Models\Koridor;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -27,20 +28,37 @@ class DashboardController extends Controller
             ->get();
 
         // Rekap per bulan
-        $aduanPerBulan = Aduan::select(
-                DB::raw('MONTH(tanggal) as bulan'),
-                DB::raw('COUNT(*) as total')
-            )
-            ->groupBy(DB::raw('MONTH(tanggal)'))
-            ->orderBy('bulan')
+        $aduanPerBulan = Aduan::selectRaw('
+                YEAR(tanggal) as tahun,
+                MONTH(tanggal) as bulan,
+                COUNT(*) as total
+            ')
+            ->groupBy('tahun', 'bulan')
+            ->orderBy('tahun', 'desc')
+            ->orderBy('bulan', 'desc')
             ->get();
+
+        // untuk grafik
+        $chartLabels = [];
+        $chartData = [];
+
+        foreach ($aduanPerBulan as $item) {
+            $chartLabels[] = Carbon::create()
+                ->month($item->bulan)
+                ->locale('id')
+                ->translatedFormat('F') . ' ' . $item->tahun;
+
+            $chartData[] = $item->total;
+        }
 
         return view('dashboard.index', compact(
             'totalAduan',
             'aduanSelesai',
             'aduanBelum',
             'aduanPerKoridor',
-            'aduanPerBulan'
+            'aduanPerBulan',
+            'chartLabels',
+            'chartData'
         ));
     }
 }

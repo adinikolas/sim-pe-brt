@@ -20,6 +20,7 @@ class AduanExport implements
 {
     protected $bulan;
     protected $tahun;
+    protected $no = 1;
 
     public function __construct($bulan = null, $tahun = null)
     {
@@ -27,9 +28,12 @@ class AduanExport implements
         $this->tahun = $tahun;
     }
 
+    /**
+     * DATA QUERY
+     */
     public function collection()
     {
-        $query = Aduan::with(['koridor', 'jenisAduan'])
+        $query = Aduan::with(['jenisAduan'])
             ->orderBy('tanggal', 'desc');
 
         if ($this->bulan) {
@@ -43,40 +47,47 @@ class AduanExport implements
         return $query->get();
     }
 
+    /**
+     * HEADER EXCEL
+     */
     public function headings(): array
     {
         return [
+            'No',
             'Tanggal',
             'Jam',
             'Pelapor',
-            'Koridor',
-            'Jenis Aduan',
             'Media',
+            'PTA',
+            'Pengemudi',
             'No Armada',
             'TKP',
+            'Jenis Aduan',
             'Isi Aduan',
-            'Status',
             'Keterangan Tindak Lanjut',
+            'Status',
         ];
     }
 
     /**
-     * Mapping data per baris
+     * ISI PER BARIS
      */
     public function map($aduan): array
     {
         return [
-            $aduan->tanggal->format('d-m-Y'),
+            $this->no++,
+            $aduan->tanggal?->format('d-m-Y'),
             $aduan->jam ?? '-',
             $aduan->pelapor ?? 'Anonim',
-            $aduan->koridor->nama_koridor ?? '-',
-            $aduan->jenisAduan->nama_aduan ?? '-',
             $aduan->media_pelaporan,
+            $aduan->pta ?? '-',
+            $aduan->pengemudi ?? '-',
             $aduan->no_armada ?? '-',
             $aduan->tkp ?? '-',
+            $aduan->jenisAduan->nama_aduan ?? '-',
             $aduan->isi_aduan,
-            $aduan->status,
             $aduan->keterangan_tindak_lanjut ?? '-',
+            $aduan->status,
         ];
     }
 
@@ -85,14 +96,15 @@ class AduanExport implements
      */
     public function styles(Worksheet $sheet)
     {
-        // Wrap text untuk SEMUA kolom
+        // Wrap text semua kolom
         $sheet->getStyle('A:Z')->getAlignment()->setWrapText(true);
 
-        // Vertical align top (biar rapi kalau text panjang)
-        $sheet->getStyle('A:Z')->getAlignment()->setVertical(Alignment::VERTICAL_TOP);
+        // Align atas biar rapi kalau teks panjang
+        $sheet->getStyle('A:Z')->getAlignment()
+              ->setVertical(Alignment::VERTICAL_TOP);
 
-        // Header style
         return [
+            // Header
             1 => [
                 'font' => [
                     'bold' => true,
