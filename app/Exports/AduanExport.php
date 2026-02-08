@@ -3,12 +3,20 @@
 namespace App\Exports;
 
 use App\Models\Aduan;
-use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
-class AduanExport implements FromCollection, WithHeadings, WithMapping
+class AduanExport implements
+    FromCollection,
+    WithHeadings,
+    WithMapping,
+    ShouldAutoSize,
+    WithStyles
 {
     protected $bulan;
     protected $tahun;
@@ -22,11 +30,14 @@ class AduanExport implements FromCollection, WithHeadings, WithMapping
     public function collection()
     {
         $query = Aduan::with(['koridor', 'jenisAduan'])
-            ->orderBy('tanggal');
+            ->orderBy('tanggal', 'desc');
 
-        if ($this->bulan && $this->tahun) {
-            $query->whereMonth('tanggal', $this->bulan)
-                  ->whereYear('tanggal', $this->tahun);
+        if ($this->bulan) {
+            $query->whereMonth('tanggal', $this->bulan);
+        }
+
+        if ($this->tahun) {
+            $query->whereYear('tanggal', $this->tahun);
         }
 
         return $query->get();
@@ -35,42 +46,62 @@ class AduanExport implements FromCollection, WithHeadings, WithMapping
     public function headings(): array
     {
         return [
-            'No',
             'Tanggal',
             'Jam',
             'Pelapor',
             'Koridor',
             'Jenis Aduan',
             'Media',
-            'PTA',
-            'Pengemudi',
             'No Armada',
             'TKP',
             'Isi Aduan',
             'Status',
-            'Tindak Lanjut',
+            'Keterangan Tindak Lanjut',
         ];
     }
 
+    /**
+     * Mapping data per baris
+     */
     public function map($aduan): array
     {
-        static $no = 1;
-
         return [
-            $no++,
             $aduan->tanggal->format('d-m-Y'),
-            $aduan->jam,
-            $aduan->pelapor,
-            optional($aduan->koridor)->nama_koridor,
-            optional($aduan->jenisAduan)->nama_aduan,
+            $aduan->jam ?? '-',
+            $aduan->pelapor ?? 'Anonim',
+            $aduan->koridor->nama_koridor ?? '-',
+            $aduan->jenisAduan->nama_aduan ?? '-',
             $aduan->media_pelaporan,
-            $aduan->pta,
-            $aduan->pengemudi,
-            $aduan->no_armada,
-            $aduan->tkp,
+            $aduan->no_armada ?? '-',
+            $aduan->tkp ?? '-',
             $aduan->isi_aduan,
             $aduan->status,
-            $aduan->keterangan_tindak_lanjut,
+            $aduan->keterangan_tindak_lanjut ?? '-',
+        ];
+    }
+
+    /**
+     * STYLE EXCEL
+     */
+    public function styles(Worksheet $sheet)
+    {
+        // Wrap text untuk SEMUA kolom
+        $sheet->getStyle('A:Z')->getAlignment()->setWrapText(true);
+
+        // Vertical align top (biar rapi kalau text panjang)
+        $sheet->getStyle('A:Z')->getAlignment()->setVertical(Alignment::VERTICAL_TOP);
+
+        // Header style
+        return [
+            1 => [
+                'font' => [
+                    'bold' => true,
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'vertical'   => Alignment::VERTICAL_CENTER,
+                ],
+            ],
         ];
     }
 }
