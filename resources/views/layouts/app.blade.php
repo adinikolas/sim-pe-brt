@@ -39,5 +39,44 @@
                 {{ $slot }}
             </main>
         </div>
+
+        {{-- MODAL ZOOM GAMBAR --}}
+        <div
+            x-data="{ open:false, img:'' }"
+            x-show="open"
+            x-cloak
+            x-transition
+            :class="open ? 'pointer-events-auto' : 'pointer-events-none'"
+            class="fixed inset-0 z-[9999]
+                flex items-center justify-center
+                bg-black/70"
+            @keydown.escape.window="open=false"
+            @open-image.window="
+                img = $event.detail;
+                open = true;
+            "
+        >
+            <img
+                :src="img"
+                class="max-w-[90%] max-h-[90%]
+                    rounded-lg shadow-lg"
+            >
+
+            <button
+                type="button"
+                @click="open=false"
+                class="absolute top-6 right-6
+                    text-white text-3xl">
+                &times;
+            </button>
+        </div>
+
+        <script>
+            window.openImage = function (src) {
+                const modal = document.querySelector('[x-data]')
+                modal.__x.$data.img = src
+                modal.__x.$data.open = true
+            }
+        </script>
     </body>
 </html>

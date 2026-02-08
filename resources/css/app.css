@@ -11,3 +11,14 @@
     dark:bg-gray-800 dark:text-gray-200
     focus:border-indigo-500 focus:ring-indigo-500;
 }
+
+@layer components {
+    .card {
+        @apply
+            bg-white dark:bg-gray-900
+            border border-gray-200 dark:border-gray-700/60
+            rounded-lg
+            shadow-sm
+            dark:shadow-[0_0_0_1px_rgba(255,255,255,0.05)];
+    }
+}

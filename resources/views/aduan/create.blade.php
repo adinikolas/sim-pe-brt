@@ -8,10 +8,12 @@
     </x-slot>
 
     <div class="pt-6">
-        <div class="max-w-6xl mx-auto px-6 space-y-6">
+        <div class="max-w-6xl mx-auto px-6">
 
-            <form action="{{ route('aduan.store') }}" method="POST"
-                  class="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
+            <form action="{{ route('aduan.store') }}"
+                method="POST"
+                enctype="multipart/form-data"
+                class="card p-6">
                 @csrf
 
                 {{-- ================= DATA ADUAN ================= --}}
@@ -80,6 +82,30 @@
                             {{ old('isi_aduan') }}
                         </x-form.textarea>
                     </div>
+
+                    <div class="mt-6">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Lampiran Gambar
+                    </label>
+
+                    <input
+                        type="file"
+                        name="lampirans[]"
+                        multiple
+                        accept="image/*"
+                        class="block w-full text-sm
+                            text-gray-900 dark:text-gray-100
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-md
+                            file:border-0
+                            file:bg-gray-200 file:text-gray-700
+                            dark:file:bg-gray-700 dark:file:text-gray-200"
+                    >
+
+                    <p class="text-xs text-gray-500 mt-1">
+                        Bisa upload lebih dari satu gambar (JPG / PNG, max 2MB per file)
+                    </p>
+                </div>
                 </div>
 
                 {{-- ================= AKSI ================= --}}

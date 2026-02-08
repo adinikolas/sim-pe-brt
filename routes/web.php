@@ -14,35 +14,43 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
 
-    // Dashboard
+    // ================= DASHBOARD =================
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 
-    // CRUD Aduan (index, create, store, show, edit, update, destroy)
+    // ================= ADUAN =================
     Route::resource('aduan', AduanController::class);
 
-    // CRUD Koridor & Jenis Aduan
-    Route::middleware(['auth'])->group(function () {
-        Route::resource('koridor', KoridorController::class)
-            ->only(['index','store','update','destroy']);
+    // HAPUS LAMPIRAN (PER GAMBAR)
+    Route::delete(
+        '/aduan/lampiran/{lampiran}',
+        [AduanController::class, 'destroyLampiran']
+    )->name('aduan.lampiran.destroy');
 
-        Route::resource('jenis-aduan', JenisAduanController::class)
-            ->only(['index','store','update','destroy']);
-    });
+    // ================= MASTER DATA =================
+    Route::resource('koridor', KoridorController::class)
+        ->only(['index','store','update','destroy']);
 
-    // Export Excel
+    Route::resource('jenis-aduan', JenisAduanController::class)
+        ->only(['index','store','update','destroy']);
+
+    // ================= EXPORT =================
     Route::get('/export', function () {
         return view('export.index');
-    })->middleware('auth')->name('export.index');
+    })->name('export.index');
 
     Route::get('/export-excel', [ExportController::class, 'excel'])
-        ->middleware('auth')
         ->name('export.excel');
 
-    // Profile (bawaan Breeze, kalau masih dipakai)
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // ================= PROFILE =================
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
 });
 
 require __DIR__.'/auth.php';

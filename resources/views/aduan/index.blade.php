@@ -53,6 +53,39 @@
                         @endfor
                     </select>
 
+                    <select name="sort"
+                        class="h-10 min-w-[220px]
+                            rounded-md border border-gray-300 dark:border-gray-600
+                            bg-white dark:bg-gray-800
+                            text-gray-900 dark:text-gray-100
+                            hover:border-gray-400 dark:hover:border-gray-500
+                            focus:ring-2 focus:ring-indigo-500
+                            font-medium transition-colors"
+                        onchange="submitFilter()">
+
+                        <option value="">Urutkan Berdasarkan</option>
+
+                        <option value="tanggal"
+                            {{ request('sort')=='tanggal'?'selected':'' }}>
+                            Tanggal Aduan
+                        </option>
+
+                        <option value="input"
+                            {{ request('sort')=='input'?'selected':'' }}>
+                            Waktu Input
+                        </option>
+
+                        <option value="status"
+                            {{ request('sort')=='status'?'selected':'' }}>
+                            Status (Belum di atas)
+                        </option>
+
+                        <option value="status_tanggal"
+                            {{ request('sort')=='status_tanggal'?'selected':'' }}>
+                            Status lalu Tanggal
+                        </option>
+                    </select>
+
                     {{-- RESET --}}
                     <button type="button"
                         onclick="window.location.href='{{ route('aduan.index') }}'"
@@ -96,7 +129,7 @@
             </div>
 
             {{-- ================= TABEL (CARD SETARA CREATE/EDIT) ================= --}}
-            <div class="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
+            <div class="card p-6">
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-gray-700 dark:text-gray-300">
                         <thead class="bg-gray-100 dark:bg-gray-800 text-xs uppercase">
@@ -145,32 +178,46 @@
                                         @endif
                                     </td>
 
-                                    {{-- AKSI (TOMBOL SEJAJAR) --}}
+                                    {{-- AKSI (DETAIL · EDIT · HAPUS) --}}
                                     <td class="px-4 py-3 text-center">
                                         <div class="flex justify-center gap-2">
+
+                                            {{-- DETAIL --}}
+                                            <a href="{{ route('aduan.show', $aduan->id) }}"
+                                            class="inline-flex items-center px-3 py-1.5
+                                                    rounded-md text-xs font-medium
+                                                    bg-gray-100 text-gray-700
+                                                    dark:bg-gray-700 dark:text-gray-200
+                                                    hover:bg-gray-200 dark:hover:bg-gray-600">
+                                                Detail
+                                            </a>
+
+                                            {{-- EDIT --}}
                                             <a href="{{ route('aduan.edit', $aduan->id) }}"
-                                               class="inline-flex items-center px-3 py-1.5
-                                                      rounded-md text-xs font-medium
-                                                      bg-indigo-100 text-indigo-700
-                                                      dark:bg-indigo-900 dark:text-indigo-300
-                                                      hover:bg-indigo-200 dark:hover:bg-indigo-800">
+                                            class="inline-flex items-center px-3 py-1.5
+                                                    rounded-md text-xs font-medium
+                                                    bg-indigo-100 text-indigo-700
+                                                    dark:bg-indigo-900 dark:text-indigo-300
+                                                    hover:bg-indigo-200 dark:hover:bg-indigo-800">
                                                 Edit
                                             </a>
 
+                                            {{-- HAPUS --}}
                                             <form action="{{ route('aduan.destroy', $aduan->id) }}"
-                                                  method="POST">
+                                                method="POST">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
                                                     onclick="return confirm('Hapus data ini?')"
                                                     class="inline-flex items-center px-3 py-1.5
-                                                           rounded-md text-xs font-medium
-                                                           bg-red-100 text-red-700
-                                                           dark:bg-red-900 dark:text-red-300
-                                                           hover:bg-red-200 dark:hover:bg-red-800">
+                                                        rounded-md text-xs font-medium
+                                                        bg-red-100 text-red-700
+                                                        dark:bg-red-900 dark:text-red-300
+                                                        hover:bg-red-200 dark:hover:bg-red-800">
                                                     Hapus
                                                 </button>
                                             </form>
+
                                         </div>
                                     </td>
                                 </tr>

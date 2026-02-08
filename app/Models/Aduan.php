@@ -42,5 +42,11 @@ class Aduan extends Model
     {
         return $this->belongsTo(JenisAduan::class, 'jenis_aduan_id');
     }
+
+    // Relasi ke Lampiran Aduan
+    public function lampirans()
+    {
+        return $this->hasMany(AduanLampiran::class);
+    }
 }
 

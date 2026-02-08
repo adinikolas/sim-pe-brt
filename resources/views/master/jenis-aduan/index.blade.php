@@ -11,10 +11,12 @@
         <div class="max-w-5xl mx-auto px-6 space-y-6">
 
             {{-- ================= TAMBAH JENIS ADUAN ================= --}}
-            <div class="bg-white dark:bg-gray-900 rounded-lg shadow p-6 space-y-4">
+            <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
                     Tambah Jenis Aduan
                 </h3>
+
+                <br>
 
                 <form action="{{ route('jenis-aduan.store') }}" method="POST"
                       class="flex gap-3">
@@ -44,7 +46,7 @@
             </div>
 
             {{-- ================= TABEL JENIS ADUAN ================= --}}
-            <div class="bg-white dark:bg-gray-900 rounded-lg shadow overflow-x-auto">
+            <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow overflow-hidden">
                 <table class="w-full text-sm">
                     <thead class="bg-gray-100 dark:bg-gray-800">
                         <tr>

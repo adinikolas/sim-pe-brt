@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Aduan;
+use App\Models\AduanLampiran;
 use App\Models\Koridor;
 use App\Models\JenisAduan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AduanController extends Controller
 {
@@ -14,10 +16,38 @@ class AduanController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Aduan::with(['koridor','jenisAduan'])
-            ->orderBy('tanggal', 'desc');
+        $query = Aduan::with(['koridor','jenisAduan']);
 
-        // FILTER BULAN & TAHUN
+        // ================= SORTING =================
+        switch ($request->get('sort')) {
+
+            // 1. Waktu input (created_at)
+            case 'input':
+                $query->orderBy('created_at', 'desc');
+                break;
+
+            // 2. Status saja (Belum di atas)
+            case 'status':
+                $query->orderByRaw("status = 'Belum' DESC")
+                    ->orderBy('created_at', 'desc');
+                break;
+
+            // 3. Status lalu tanggal
+            case 'status_tanggal':
+                $query->orderByRaw("status = 'Belum' DESC")
+                    ->orderBy('tanggal', 'desc')
+                    ->orderBy('jam', 'desc');
+                break;
+
+            // DEFAULT: Tanggal Aduan
+            default:
+                $query->orderBy('tanggal', 'desc')
+                    ->orderBy('jam', 'desc')
+                    ->orderBy('id', 'desc');
+                break;
+        }
+
+        // ================= FILTER =================
         if ($request->filled('bulan')) {
             $query->whereMonth('tanggal', $request->bulan);
         }
@@ -26,19 +56,17 @@ class AduanController extends Controller
             $query->whereYear('tanggal', $request->tahun);
         }
 
-        // SEARCH
+        // ================= SEARCH =================
         if ($request->filled('q')) {
             $q = $request->q;
             $query->where(function ($sub) use ($q) {
                 $sub->where('pelapor', 'like', "%$q%")
                     ->orWhere('media_pelaporan', 'like', "%$q%")
                     ->orWhere('no_armada', 'like', "%$q%")
-                    ->orWhereHas('koridor', function ($k) use ($q) {
-                        $k->where('nama_koridor', 'like', "%$q%");
-                    })
-                    ->orWhereHas('jenisAduan', function ($j) use ($q) {
-                        $j->where('nama_aduan', 'like', "%$q%");
-                    });
+                    ->orWhereHas('koridor', fn($k) =>
+                        $k->where('nama_koridor', 'like', "%$q%"))
+                    ->orWhereHas('jenisAduan', fn($j) =>
+                        $j->where('nama_aduan', 'like', "%$q%"));
             });
         }
 
@@ -48,7 +76,18 @@ class AduanController extends Controller
     }
 
     /**
-     * Menyimpan data aduan baru
+     * Form tambah aduan
+     */
+    public function create()
+    {
+        $koridors = Koridor::all();
+        $jenisAduans = JenisAduan::all();
+
+        return view('aduan.create', compact('koridors', 'jenisAduans'));
+    }
+
+    /**
+     * Simpan aduan + lampiran
      */
     public function store(Request $request)
     {
@@ -67,12 +106,25 @@ class AduanController extends Controller
 
             'isi_aduan' => 'required|string',
             'keterangan_tindak_lanjut' => 'nullable|string',
+
+            // VALIDASI LAMPIRAN
+            'lampirans.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // Default status saat input
         $validated['status'] = 'Belum';
 
-        Aduan::create($validated);
+        $aduan = Aduan::create($validated);
+
+        // SIMPAN LAMPIRAN
+        if ($request->hasFile('lampirans')) {
+            foreach ($request->file('lampirans') as $file) {
+                $path = $file->store('aduan', 'public');
+
+                $aduan->lampirans()->create([
+                    'file_path' => $path
+                ]);
+            }
+        }
 
         return redirect()
             ->route('aduan.index')
@@ -80,17 +132,29 @@ class AduanController extends Controller
     }
 
     /**
-     * Menampilkan detail satu aduan
+     * Detail laporan (WEB, bukan JSON)
      */
-    public function show($id)
+    public function show(Aduan $aduan)
     {
-        $aduan = Aduan::with(['koridor', 'jenisAduan'])->findOrFail($id);
+        $aduan->load(['koridor', 'jenisAduan', 'lampirans']);
 
-        return response()->json($aduan);
+        return view('aduan.show', compact('aduan'));
     }
 
     /**
-     * Update data aduan
+     * Form edit aduan
+     */
+    public function edit($id)
+    {
+        $aduan = Aduan::with('lampirans')->findOrFail($id);
+        $koridors = Koridor::all();
+        $jenisAduans = JenisAduan::all();
+
+        return view('aduan.edit', compact('aduan', 'koridors', 'jenisAduans'));
+    }
+
+    /**
+     * Update aduan + tambah lampiran baru
      */
     public function update(Request $request, $id)
     {
@@ -112,9 +176,23 @@ class AduanController extends Controller
             'isi_aduan' => 'required|string',
             'status' => 'required|in:Selesai,Belum',
             'keterangan_tindak_lanjut' => 'nullable|string',
+
+            // VALIDASI LAMPIRAN BARU
+            'lampirans.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $aduan->update($validated);
+
+        // TAMBAH LAMPIRAN BARU (TIDAK MENGHAPUS YANG LAMA)
+        if ($request->hasFile('lampirans')) {
+            foreach ($request->file('lampirans') as $file) {
+                $path = $file->store('aduan', 'public');
+
+                $aduan->lampirans()->create([
+                    'file_path' => $path
+                ]);
+            }
+        }
 
         return redirect()
             ->route('aduan.index')
@@ -122,33 +200,33 @@ class AduanController extends Controller
     }
 
     /**
-     * Hapus data aduan
+     * Hapus aduan + semua lampiran
      */
     public function destroy($id)
     {
-        $aduan = Aduan::findOrFail($id);
+        $aduan = Aduan::with('lampirans')->findOrFail($id);
+
+        foreach ($aduan->lampirans as $lampiran) {
+            Storage::disk('public')->delete($lampiran->file_path);
+            $lampiran->delete();
+        }
+
         $aduan->delete();
 
-        return response()->json([
-            'message' => 'Data aduan berhasil dihapus'
-        ]);
+        return back()->with('success', 'Data aduan berhasil dihapus');
     }
 
-    public function create()
+    /**
+     * Hapus satu lampiran gambar
+     */
+    public function destroyLampiran(AduanLampiran $lampiran)
     {
-        $koridors = Koridor::all();
-        $jenisAduans = JenisAduan::all();
+        // hapus file fisik
+        Storage::disk('public')->delete($lampiran->file_path);
 
-        return view('aduan.create', compact('koridors', 'jenisAduans'));
+        // hapus data lampiran
+        $lampiran->delete();
+
+        return back()->with('success', 'Lampiran berhasil dihapus');
     }
-
-    public function edit($id)
-    {
-        $aduan = Aduan::findOrFail($id);
-        $koridors = Koridor::all();
-        $jenisAduans = JenisAduan::all();
-
-        return view('aduan.edit', compact('aduan', 'koridors', 'jenisAduans'));
-    }
-
 }
