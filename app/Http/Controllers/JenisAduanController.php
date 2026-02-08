@@ -9,14 +9,17 @@ class JenisAduanController extends Controller
 {
     public function index()
     {
-        $jenisAduans = JenisAduan::orderBy('nama_aduan')->get();
+        $jenisAduans = JenisAduan::withCount('aduans')
+            ->orderBy('nama_aduan')
+            ->get();
+
         return view('master.jenis-aduan.index', compact('jenisAduans'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'nama_aduan' => 'required|string|max:100'
+            'nama_aduan' => 'required|string|max:150'
         ]);
 
         JenisAduan::create($request->only('nama_aduan'));
@@ -24,20 +27,28 @@ class JenisAduanController extends Controller
         return back()->with('success', 'Jenis aduan berhasil ditambahkan');
     }
 
-    public function update(Request $request, JenisAduan $jenis_aduan)
+    public function update(Request $request, JenisAduan $jenisAduan)
     {
         $request->validate([
-            'nama_aduan' => 'required|string|max:100'
+            'nama_aduan' => 'required|string|max:150'
         ]);
 
-        $jenis_aduan->update($request->only('nama_aduan'));
+        $jenisAduan->update($request->only('nama_aduan'));
 
         return back()->with('success', 'Jenis aduan berhasil diperbarui');
     }
 
-    public function destroy(JenisAduan $jenis_aduan)
+    public function destroy(JenisAduan $jenisAduan)
     {
-        $jenis_aduan->delete();
+        // BLOK JIKA MASIH DIPAKAI
+        if ($jenisAduan->aduans()->exists()) {
+            return back()->with(
+                'error',
+                'Jenis aduan tidak bisa dihapus karena masih digunakan pada data aduan.'
+            );
+        }
+
+        $jenisAduan->delete();
 
         return back()->with('success', 'Jenis aduan berhasil dihapus');
     }

@@ -9,7 +9,11 @@ class KoridorController extends Controller
 {
     public function index()
     {
-        $koridors = Koridor::orderBy('nama_koridor')->get();
+        // ambil + hitung jumlah aduan
+        $koridors = Koridor::withCount('aduans')
+            ->orderBy('nama_koridor')
+            ->get();
+
         return view('master.koridor.index', compact('koridors'));
     }
 
@@ -37,9 +41,16 @@ class KoridorController extends Controller
 
     public function destroy(Koridor $koridor)
     {
+        // BLOK JIKA MASIH DIPAKAI DI ADUAN
+        if ($koridor->aduans()->exists()) {
+            return back()->with(
+                'error',
+                'Koridor tidak bisa dihapus karena masih digunakan pada data aduan.'
+            );
+        }
+
         $koridor->delete();
 
         return back()->with('success', 'Koridor berhasil dihapus');
     }
 }
-

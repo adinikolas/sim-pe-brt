@@ -7,7 +7,7 @@
         </h2>
     </x-slot>
 
-    <div class="pt-2">
+    <div class="pt-6">
         <div class="max-w-5xl mx-auto px-6 space-y-6">
 
             {{-- FORM TAMBAH --}}
@@ -57,54 +57,86 @@
                     <tbody>
                         @foreach ($koridors as $k)
                         <tr class="border-t dark:border-gray-700">
-                            <td class="px-4 py-3 text-gray-800 dark:text-gray-200">
-                                {{ $loop->iteration }}
-                            </td>
 
-                            <td class="px-4 py-3">
-                                <form action="{{ route('koridor.update', $k->id) }}" method="POST"
-                                    class="flex gap-2">
-                                    @csrf
-                                    @method('PUT')
+                            {{-- FORM UPDATE (1 ROW = 1 FORM) --}}
+                            <form action="{{ route('koridor.update', $k->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')
 
+                                {{-- NO --}}
+                                <td class="px-4 py-3 text-gray-800 dark:text-gray-200">
+                                    {{ $loop->iteration }}
+                                </td>
+
+                                {{-- NAMA KORIDOR --}}
+                                <td class="px-4 py-3">
                                     <input
                                         type="text"
                                         name="nama_koridor"
                                         value="{{ $k->nama_koridor }}"
-                                        class="flex-1 rounded-md
+                                        class="w-full rounded-md
                                             bg-white dark:bg-gray-800
                                             text-gray-900 dark:text-gray-100
                                             border border-gray-300 dark:border-gray-600"
+                                        required
                                     >
+                                </td>
 
-                                    <button
-                                        class="px-4 py-1.5 rounded-md
-                                            bg-indigo-600 text-white
-                                            hover:bg-indigo-700">
-                                        Update
-                                    </button>
-                                </form>
-                            </td>
+                                {{-- AKSI --}}
+                                <td class="px-4 py-3">
+                                    <div class="flex justify-center gap-2">
 
-                            <td class="px-4 py-3 text-center">
-                                <form action="{{ route('koridor.destroy', $k->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button
-                                        onclick="return confirm('Hapus data ini?')"
-                                        class="px-4 py-1.5 rounded-md
-                                            bg-red-600 text-white
-                                            hover:bg-red-700">
-                                        Hapus
-                                    </button>
-                                </form>
-                            </td>
+                                        {{-- UPDATE --}}
+                                        <button
+                                            type="submit"
+                                            class="px-4 py-1.5 rounded-md
+                                                bg-indigo-600 text-white
+                                                hover:bg-indigo-700">
+                                            Update
+                                        </button>
+                            </form>
+
+                                        {{-- STATUS / HAPUS --}}
+                                        @if ($k->aduans_count > 0)
+                                            <span
+                                                class="inline-flex items-center px-4 py-1.5 rounded-md
+                                                    text-xs font-medium
+                                                    bg-yellow-100 text-yellow-800
+                                                    dark:bg-yellow-900 dark:text-yellow-200">
+                                                Dipakai ({{ $k->aduans_count }})
+                                            </span>
+                                        @else
+                                            <form action="{{ route('koridor.destroy', $k->id) }}"
+                                                method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button
+                                                    onclick="return confirm('Hapus koridor ini?')"
+                                                    class="px-4 py-1.5 rounded-md
+                                                        bg-red-600 text-white
+                                                        hover:bg-red-700">
+                                                    Hapus
+                                                </button>
+                                            </form>
+                                        @endif
+
+                                    </div>
+                                </td>
                         </tr>
                         @endforeach
+
+                        @if ($koridors->isEmpty())
+                        <tr>
+                            <td colspan="3"
+                                class="px-4 py-6 text-center text-gray-500">
+                                Data koridor belum tersedia
+                            </td>
+                        </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
-
+            <br>
         </div>
     </div>
 
