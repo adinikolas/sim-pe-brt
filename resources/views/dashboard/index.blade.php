@@ -190,6 +190,104 @@
                 </div>
             </div>
 
+            {{-- ================= KLASIFIKASI ADUAN ================= --}}
+            <div class="bg-white dark:bg-gray-900
+                        border border-gray-200 dark:border-gray-700/60
+                        rounded-lg shadow-sm
+                        mt-6">
+
+                <div class="border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+                    <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        Klasifikasi Aduan per Jenis & Media
+                    </h3>
+                </div>
+
+                <div class="p-4 overflow-x-auto">
+
+                    <table class="min-w-full text-sm">
+
+                        <thead class="bg-gray-50 dark:bg-gray-800">
+
+                            <tr>
+
+                                <th class="px-4 py-2 text-left text-gray-600 dark:text-gray-300">
+                                    Jenis Aduan
+                                </th>
+
+                                <th class="px-4 py-2 text-center text-gray-600 dark:text-gray-300">
+                                    Sosial Media
+                                </th>
+
+                                <th class="px-4 py-2 text-center text-gray-600 dark:text-gray-300">
+                                    Lapor Semar
+                                </th>
+
+                                <th class="px-4 py-2 text-center text-gray-600 dark:text-gray-300">
+                                    Call Center
+                                </th>
+
+                                <th class="px-4 py-2 text-center text-gray-600 dark:text-gray-300">
+                                    Email
+                                </th>
+
+                                <th class="px-4 py-2 text-center text-gray-600 dark:text-gray-300">
+                                    Datang Langsung
+                                </th>
+
+                                <th class="px-4 py-2 text-center font-semibold text-gray-600 dark:text-gray-300">
+                                    Total
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @foreach($klasifikasi as $item)
+
+                            <tr class="border-t dark:border-gray-700">
+
+                                <td class="px-4 py-2 text-gray-800 dark:text-gray-200">
+                                    {{ $item->nama_aduan }}
+                                </td>
+
+                                <td class="px-4 py-2 text-center text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                    {{ $item->sosial_media }}
+                                </td>
+
+                                <td class="px-4 py-2 text-center text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                    {{ $item->lapor_semar }}
+                                </td>
+
+                                <td class="px-4 py-2 text-center text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                    {{ $item->call_center }}
+                                </td>
+
+                                <td class="px-4 py-2 text-center text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                    {{ $item->email }}
+                                </td>
+
+                                <td class="px-4 py-2 text-center text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                    {{ $item->datang_langsung }}
+                                </td>
+
+                                <td class="px-4 py-2 text-center text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                    {{ $item->total }}
+                                </td>
+
+                            </tr>
+
+                            @endforeach
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
         </div>
     </div>
 

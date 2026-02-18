@@ -13,6 +13,7 @@ class JenisAduan extends Model
 
     protected $fillable = [
         'nama_aduan',
+        'kategori',
     ];
 
     // Relasi: 1 Jenis Aduan punya banyak Aduan

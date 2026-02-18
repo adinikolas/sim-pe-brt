@@ -9,7 +9,7 @@ class Aduan extends Model
 {
     use HasFactory;
 
-    protected $table = 'data_aduans';
+    protected $table = 'aduans';
 
     protected $fillable = [
         'tanggal',
