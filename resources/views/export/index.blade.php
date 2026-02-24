@@ -72,74 +72,82 @@
 
                 </div>
 
-                {{-- TOMBOL EXPORT --}}
-                <div class="mt-8">
+                {{-- TOMBOL EXPORT SEBARIS --}}
+                <div class="mt-8 flex flex-col sm:flex-row gap-3">
 
-                    <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                    {{-- EXPORT SESUAI FILTER --}}
+                    <form method="GET" action="{{ route('export.excel') }}" class="w-full sm:w-auto">
 
-                        {{-- EXPORT SESUAI FILTER --}}
-                        <a
-                            x-bind:href="
-                                '{{ route('export.excel') }}'
-                                + '?bulan=' + bulan
-                                + '&tahun=' + tahun
-                            "
+                        <input type="hidden" name="bulan" :value="bulan">
+                        <input type="hidden" name="tahun" :value="tahun">
+
+                        <button
+                            type="submit"
+                            :disabled="!bulan || !tahun"
+                            :class="(!bulan || !tahun)
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : 'bg-blue-600 hover:bg-blue-700'"
                             class="
                                 w-full sm:w-auto
                                 px-6 py-2.5
                                 rounded-lg
                                 font-semibold text-sm
-                                text-center
-                                bg-blue-600 text-white
-                                hover:bg-blue-700
-                                transition
-                                shadow
+                                text-white
+                                transition shadow
                             "
                         >
                             Export Sesuai Filter
-                        </a>
+                        </button>
 
-                        {{-- EXPORT REKAP BULANAN --}}
-                        <a
-                            x-bind:href="
-                                '{{ route('export.rekap.bulanan') }}'
-                                + '?bulan=' + bulan
-                                + '&tahun=' + tahun
-                            "
+                    </form>
+
+
+                    {{-- EXPORT REKAP BULANAN --}}
+                    <form method="GET" action="{{ route('export.rekap.bulanan') }}" class="w-full sm:w-auto">
+
+                        <input type="hidden" name="bulan" :value="bulan">
+                        <input type="hidden" name="tahun" :value="tahun">
+
+                        <button
+                            type="submit"
+                            :disabled="!bulan || !tahun"
+                            :class="(!bulan || !tahun)
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : 'bg-green-600 hover:bg-green-700'"
                             class="
                                 w-full sm:w-auto
                                 px-6 py-2.5
                                 rounded-lg
                                 font-semibold text-sm
-                                text-center
-                                bg-green-600 text-white
-                                hover:bg-green-700
-                                transition
-                                shadow
+                                text-white
+                                transition shadow
                             "
                         >
                             Export Rekap Bulanan
-                        </a>
+                        </button>
 
-                        {{-- EXPORT SEMUA DATA --}}
-                        <a
-                            href="{{ route('export.excel') }}"
+                    </form>
+
+
+                    {{-- EXPORT SELURUH DATA --}}
+                    <form method="GET" action="{{ route('export.excel') }}" class="w-full sm:w-auto">
+
+                        <button
+                            type="submit"
                             class="
                                 w-full sm:w-auto
                                 px-6 py-2.5
                                 rounded-lg
                                 font-semibold text-sm
-                                text-center
-                                bg-gray-600 text-white
-                                hover:bg-gray-700
-                                transition
-                                shadow
+                                text-white
+                                bg-gray-600 hover:bg-gray-700
+                                transition shadow
                             "
                         >
                             Export Seluruh Data
-                        </a>
+                        </button>
 
-                    </div>
+                    </form>
 
                 </div>
 
