@@ -35,12 +35,18 @@ Route::middleware(['auth'])->group(function () {
         ->only(['index','store','update','destroy']);
 
     // ================= EXPORT =================
-    Route::get('/export', function () {
-        return view('export.index');
-    })->name('export.index');
 
+    // halaman export
+    Route::get('/export', [ExportController::class, 'index'])
+        ->name('export.index');
+
+    // export data aduan (sesuai filter dan semua)
     Route::get('/export-excel', [ExportController::class, 'excel'])
         ->name('export.excel');
+
+    // export rekap bulanan format BRT
+    Route::get('/export-rekap-bulanan', [ExportController::class, 'rekapBulanan'])
+        ->name('export.rekap.bulanan');
 
     // ================= PROFILE =================
     Route::get('/profile', [ProfileController::class, 'edit'])

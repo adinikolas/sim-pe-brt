@@ -11,7 +11,8 @@
             <div
                 x-data="{
                     bulan: '',
-                    tahun: ''
+                    tahun: '',
+                    koridor: ''
                 }"
                 class="bg-white dark:bg-gray-800 rounded-xl shadow p-6"
             >
@@ -21,7 +22,7 @@
                 </h3>
 
                 {{-- FILTER --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
                     {{-- BULAN --}}
                     <div>
@@ -61,6 +62,26 @@
                         </select>
                     </div>
 
+                    {{-- KORIDOR --}}
+                    <div>
+                        <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                            Koridor
+                        </label>
+                        <select
+                            x-model="koridor"
+                            class="w-full rounded-md border-gray-300 dark:border-gray-600
+                                bg-white dark:bg-gray-900
+                                text-gray-900 dark:text-gray-100"
+                        >
+                            <option value="">Semua Koridor</option>
+                            @foreach($koridors as $k)
+                                <option value="{{ $k->id }}">
+                                    {{ $k->nama_koridor }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
                 </div>
 
                 {{-- TOMBOL --}}
@@ -68,20 +89,41 @@
 
                     {{-- EXPORT SESUAI FILTER --}}
                     <a
-                        x-bind:href="bulan && tahun
-                            ? '{{ route('export.excel') }}?bulan=' + bulan + '&tahun=' + tahun
-                            : '#'"
-                        x-bind:class="bulan && tahun
-                            ? 'bg-white text-black dark:bg-white dark:text-black'
-                            : 'bg-gray-400 text-gray-600 cursor-not-allowed'"
+                        x-bind:href="
+                            '{{ route('export.excel') }}'
+                            + '?bulan=' + bulan
+                            + '&tahun=' + tahun
+                            + '&koridor=' + koridor
+                        "
                         class="
                             h-11 px-6 rounded-lg font-semibold text-sm
                             inline-flex items-center justify-center
+                            bg-white text-black dark:bg-white dark:text-black
                             border border-white
+                            hover:bg-gray-200
                             transition
                         "
                     >
                         Export Sesuai Filter
+                    </a>
+
+                    {{-- EXPORT REKAP BULANAN --}}
+                    <a
+                    x-bind:href="
+                    '{{ route('export.rekap.bulanan') }}'
+                    +'?bulan='+bulan
+                    +'&tahun='+tahun
+                    +'&koridor='+koridor
+                    "
+                    class="
+                    h-11 px-6 rounded-lg font-semibold text-sm
+                    inline-flex items-center justify-center
+                    bg-green-600 text-white
+                    hover:bg-green-700
+                    transition
+                    "
+                    >
+                    Export Rekap Bulanan
                     </a>
 
                     {{-- EXPORT SEMUA --}}

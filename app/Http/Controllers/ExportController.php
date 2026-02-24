@@ -3,49 +3,85 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Koridor;
 use App\Exports\AduanExport;
+use App\Exports\RekapBulananExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
 
 class ExportController extends Controller
 {
+
+    /**
+     * HALAMAN EXPORT
+     */
+    public function index()
+    {
+        $koridors = Koridor::orderBy('nama_koridor')->get();
+
+        return view('export.index', compact('koridors'));
+    }
+
+
+    /**
+     * EXPORT DATA ADUAN (FILTER / SEMUA)
+     */
     public function excel(Request $request)
     {
-        $bulan = $request->bulan;
-        $tahun = $request->tahun;
+        $bulan   = $request->bulan;
+        $tahun   = $request->tahun;
+        $koridor = $request->koridor;
 
-        /**
-         * Cegah filter setengah
-         */
-        if (($bulan && !$tahun) || (!$bulan && $tahun)) {
-            return back()->with('error', 'Pilih bulan dan tahun');
+        if (($bulan && !$tahun) || (!$bulan && $tahun))
+        {
+            return back()->with('error','Pilih bulan dan tahun');
         }
 
-        /**
-         * Cegah non-admin export semua
-         */
-        if (!$bulan && !$tahun && auth()->user()->role !== 'admin') {
-            abort(403, 'Tidak punya akses export semua data');
+        if ($bulan && $tahun)
+        {
+            $namaFile =
+                'Aduan_' .
+                Carbon::create($tahun,$bulan)
+                    ->translatedFormat('F_Y')
+                . '.xlsx';
         }
-
-        /**
-         * Nama file
-         */
-        if ($bulan && $tahun) {
-            $namaFile = 'Aduan_' .
-                Carbon::create($tahun, $bulan)
-                    ->locale('id')
-                    ->translatedFormat('F_Y') . '.xlsx';
-        } else {
+        else
+        {
             $namaFile = 'Aduan_Semua_Data.xlsx';
         }
 
-        /**
-         * Download Excel
-         */
         return Excel::download(
-            new AduanExport($bulan, $tahun),
+            new AduanExport($bulan,$tahun,$koridor),
             $namaFile
         );
     }
+
+
+    /**
+     * EXPORT REKAP BULANAN FORMAT BRT
+     */
+    public function rekapBulanan(Request $request)
+    {
+
+        $bulan   = $request->bulan;
+        $tahun   = $request->tahun;
+        $koridor = $request->koridor;
+
+        if (!$bulan || !$tahun)
+        {
+            return back()->with('error','Pilih bulan dan tahun');
+        }
+
+        $namaFile =
+            'Rekap_Aduan_Saran_' .
+            Carbon::create($tahun,$bulan)
+                ->translatedFormat('F_Y')
+            . '.xlsx';
+
+        return Excel::download(
+            new RekapBulananExport($bulan,$tahun,$koridor),
+            $namaFile
+        );
+    }
+
 }

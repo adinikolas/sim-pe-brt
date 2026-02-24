@@ -9,7 +9,7 @@ class MasterKoridorSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('master_koridors')->insert([
+        DB::table('master_koridors')->insertOrIgnore([
             [
                 'nama_koridor' => 'Koridor 1',
                 'created_at' => now(),
@@ -26,12 +26,47 @@ class MasterKoridorSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'nama_koridor' => 'Feeder A',
+                'nama_koridor' => 'Koridor 4',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'nama_koridor' => 'Feeder B',
+                'nama_koridor' => 'Koridor 5',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nama_koridor' => 'Koridor 6',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nama_koridor' => 'Koridor 7',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nama_koridor' => 'Koridor 8',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nama_koridor' => 'Feeder 1',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nama_koridor' => 'Feeder 2',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nama_koridor' => 'Feeder 3',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nama_koridor' => 'Feeder 4',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
