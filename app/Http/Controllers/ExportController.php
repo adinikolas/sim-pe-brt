@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Koridor;
 use App\Exports\AduanExport;
 use App\Exports\RekapBulananExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -17,9 +16,7 @@ class ExportController extends Controller
      */
     public function index()
     {
-        $koridors = Koridor::orderBy('nama_koridor')->get();
-
-        return view('export.index', compact('koridors'));
+        return view('export.index');
     }
 
 
@@ -30,7 +27,6 @@ class ExportController extends Controller
     {
         $bulan   = $request->bulan;
         $tahun   = $request->tahun;
-        $koridor = $request->koridor;
 
         if (($bulan && !$tahun) || (!$bulan && $tahun))
         {
@@ -51,7 +47,7 @@ class ExportController extends Controller
         }
 
         return Excel::download(
-            new AduanExport($bulan,$tahun,$koridor),
+            new AduanExport($bulan,$tahun),
             $namaFile
         );
     }
@@ -65,7 +61,6 @@ class ExportController extends Controller
 
         $bulan   = $request->bulan;
         $tahun   = $request->tahun;
-        $koridor = $request->koridor;
 
         if (!$bulan || !$tahun)
         {
@@ -79,7 +74,7 @@ class ExportController extends Controller
             . '.xlsx';
 
         return Excel::download(
-            new RekapBulananExport($bulan,$tahun,$koridor),
+            new RekapBulananExport($bulan,$tahun),
             $namaFile
         );
     }
