@@ -43,6 +43,11 @@ php artisan migrate
 ``` bash
 php artisan db:seed --class=AdminUserSeeder
 ```
+Seeder MasterKoridor untuk Koridor dan MasterJenisAduan untuk Jenis Aduan (bersifat opsional)
+``` bash
+php artisan db:seed --class=MasterKoridorSeeder
+php artisan db:seed --class=MasterJenisAduanSeeder
+```
 
 6. **Menjalankan Server** Untuk menjalankan project ini diperlukan 2 proses terminal antara lain:
 ``` bash
