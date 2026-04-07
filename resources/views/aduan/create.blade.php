@@ -46,7 +46,7 @@
                             name="media_pelaporan"
                             required>
                             @foreach ([
-                                'WA','IG','FB','X',
+                                'WA','IG','FB','X','Telegram',
                                 'Lapor Semar','Call Center',
                                 'Email','Datang Langsung'
                             ] as $media)

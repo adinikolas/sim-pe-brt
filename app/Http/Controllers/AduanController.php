@@ -102,7 +102,7 @@ class AduanController extends Controller
 
             'koridor_id' => 'required|exists:master_koridors,id',
             'jenis_aduan_id' => 'required|exists:master_jenis_aduans,id',
-            'media_pelaporan' => 'required|in:WA,IG,FB,X,Lapor Semar,Call Center,Email,Datang Langsung',
+            'media_pelaporan' => 'required|in:WA,IG,FB,X,Telegram,Lapor Semar,Call Center,Email,Datang Langsung',
 
             'isi_aduan' => 'required|string',
             'keterangan_tindak_lanjut' => 'nullable|string',
@@ -171,7 +171,7 @@ class AduanController extends Controller
 
             'koridor_id' => 'required|exists:master_koridors,id',
             'jenis_aduan_id' => 'required|exists:master_jenis_aduans,id',
-            'media_pelaporan' => 'required|in:WA,IG,FB,X,Lapor Semar,Call Center,Email,Datang Langsung',
+            'media_pelaporan' => 'required|in:WA,IG,FB,X,Telegram,Lapor Semar,Call Center,Email,Datang Langsung',
 
             'isi_aduan' => 'required|string',
             'status' => 'required|in:Selesai,Belum',

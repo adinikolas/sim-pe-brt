@@ -51,7 +51,7 @@ class DashboardController extends Controller
                 DB::raw("
                     SUM(
                         CASE
-                            WHEN LOWER(TRIM(aduans.media_pelaporan)) IN ('wa','ig','fb','x')
+                            WHEN LOWER(TRIM(aduans.media_pelaporan)) IN ('wa','ig','fb','x','telegram')
                             THEN 1 ELSE 0
                         END
                     ) as sosial_media

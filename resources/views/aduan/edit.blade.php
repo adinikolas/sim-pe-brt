@@ -40,7 +40,7 @@
 
                         <x-form.select label="Media Pengaduan" name="media_pelaporan">
                             @foreach ([
-                                'WA','IG','FB','X',
+                                'WA','IG','FB','X','Telegram',
                                 'Lapor Semar','Call Center',
                                 'Email','Datang Langsung'
                             ] as $media)

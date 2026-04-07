@@ -90,7 +90,7 @@ class PerKoridorSheet implements
             {
                 $sosmed = Aduan::where('koridor_id',$koridor->id)
                     ->where('jenis_aduan_id',$jenis->id)
-                    ->whereIn('media_pelaporan',['WA','IG','FB','X'])
+                    ->whereIn('media_pelaporan',['WA','IG','FB','X','Telegram'])
                     ->whereMonth('tanggal',$this->bulan)
                     ->whereYear('tanggal',$this->tahun)
                     ->count();
