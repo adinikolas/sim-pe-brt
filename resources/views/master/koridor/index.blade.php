@@ -1,4 +1,5 @@
 <x-app-layout>
+    <x-slot name="title">Master Koridor</x-slot>
 
     {{-- HEADER --}}
     <x-slot name="header">
