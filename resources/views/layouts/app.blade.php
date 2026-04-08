@@ -12,7 +12,9 @@
 
     <link rel="icon" href="{{ asset('favicon_trans-smg.png') }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>
+        {{ isset($title) ? $title . ' - ' . config('app.name') : config('app.name') }}
+    </title>
 
 
     {{-- PREVENT FLICKER --}}

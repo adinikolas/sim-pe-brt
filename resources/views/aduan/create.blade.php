@@ -1,4 +1,5 @@
 <x-app-layout>
+    <x-slot name="title">Tambah Aduan</x-slot>
 
     {{-- HEADER (POSISI SAMA DENGAN DAFTAR ADUAN) --}}
     <x-slot name="header">
